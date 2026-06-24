@@ -1,26 +1,111 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------ */
+/*  Nulebal — design tokens                                            */
+/* ------------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #ffffff;
+  --bone: #f5f4f1; /* warm off-white section fill */
+  --ink: #0e0e0d; /* near-black text */
+  --muted: #8c8a84; /* captions, meta */
+  --hairline: #e5e3dd; /* dividers, borders */
+  --accent: #1f36ff; /* electric ultramarine — used sparingly */
+
+  --header-h: 4.5rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-bone: var(--bone);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-hairline: var(--hairline);
+  --color-accent: var(--accent);
+
+  --font-display: var(--font-bricolage);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  /* offset anchored scroll for the sticky header */
+  scroll-padding-top: var(--header-h);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Component classes live in @layer components so Tailwind utilities
+   (e.g. text-ink, text-paper) naturally override them without `!`. */
+@layer components {
+  /* monospace label / spec-tag treatment */
+  .label {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Tight, wide display type for headlines */
+  .display {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 0.92;
+    text-transform: uppercase;
+  }
+
+  /* Underline-on-hover link used across nav + footer */
+  .link-underline {
+    position: relative;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s cubic-bezier(0.6, 0, 0.2, 1);
+  }
+  .link-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+/* Elements GSAP reveals start hidden; reduced-motion + no-JS fall back. */
+[data-reveal] {
+  will-change: transform, opacity;
+}
+.no-js [data-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
